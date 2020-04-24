@@ -1,7 +1,7 @@
 export default {
   background: "#202020",
   card: "#303030",
-  primary: "#3700B3",
+  primary: "#C38FFF",
   secondary: "#018786",
   text: "#ffffff",
 };

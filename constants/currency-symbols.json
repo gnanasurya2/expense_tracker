@@ -170,7 +170,7 @@
     "symbol": "&#8364;"
   },
   {
-    "currency": "Falkland Islands (Malvinas) Pound",
+    "currency": "Falkland Islands Pound",
     "abbreviation": "FKP",
     "symbol": "&#163;"
   },
@@ -268,11 +268,6 @@
     "currency": "Kazakhstan Tenge",
     "abbreviation": "KZT",
     "symbol": "&#1083;&#1074;"
-  },
-  {
-    "currency": "Korea (North) Won",
-    "abbreviation": "KPW",
-    "symbol": "&#8361;"
   },
   {
     "currency": "Korea (South) Won",
@@ -468,11 +463,6 @@
     "currency": "South Africa Rand",
     "abbreviation": "ZAR",
     "symbol": "&#82;"
-  },
-  {
-    "currency": "Korea (South) Won",
-    "abbreviation": "KRW",
-    "symbol": "&#8361;"
   },
   {
     "currency": "Sri Lanka Rupee",

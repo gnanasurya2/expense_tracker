@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -8,32 +9,34 @@ import {
   Image,
 } from "react-native";
 
-import currencySymbol from "../constants/currency-symbols.json";
+import currencySymbols from "../constants/currency-symbols.json";
 import Colors from "../constants/colors";
 import Currency from "../Components/Currency";
 import Button from "../Components/UI/Button";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import * as actions from "../store/actions/user";
 
 const CurrencySelectionScreen = (props) => {
+  const dispatch = useDispatch();
   const [currencyName, setCurrencyName] = useState("");
+  const [currencySymbol, setCurrencySymbol] = useState("");
   const [userName, setUserName] = useState("");
-  const [currencyData, setCurrencyData] = useState(currencySymbol);
-
+  const [currencyData, setCurrencyData] = useState(currencySymbols);
   const filterCurrencyHandler = (text) => {
     setCurrencyName(text);
-    let data = currencySymbol.filter((ele) => {
+    let data = currencySymbols.filter((ele) => {
       return ele.currency.includes(text);
     });
     setCurrencyData(data);
   };
 
   const signUpHandler = () => {
-    console.log(userName, currencyName);
+    dispatch(actions.userDetialsHandler(userName, currencySymbol));
   };
 
   const currencySymbolHandler = (symbol, name) => {
-    console.log(symbol);
     setCurrencyName(name);
+    setCurrencySymbol(symbol);
   };
   return (
     <KeyboardAvoidingView style={styles.wrapper}>

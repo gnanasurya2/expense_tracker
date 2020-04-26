@@ -1,0 +1,2 @@
+export const USER_DETAIL = "USER_DETAIL";
+export const FETCH_USER_DETAIL = "FETCH_USER_DETAIL";

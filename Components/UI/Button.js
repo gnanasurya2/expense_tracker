@@ -23,6 +23,7 @@ const styles = new StyleSheet.create({
   },
   text: {
     fontSize: 18,
+    alignSelf: "center",
   },
 });
 

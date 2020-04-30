@@ -9,13 +9,14 @@ const TitleCard = (props) => {
   const [style, setStyle] = useState(styles.green);
   const [balance, setBalance] = useState(0);
   useEffect(() => {
-    setBalance(props.incomeAmount - props.expenseAmount);
-    if (balance < 0) {
-      balance *= -1;
+    let remainingAmount = props.incomeAmount - props.expenseAmount;
+    if (remainingAmount < 0) {
+      remainingAmount *= -1;
       setStyle(styles.red);
     } else {
       setStyle(styles.green);
     }
+    setBalance(remainingAmount);
   }, [balance, props.incomeAmount, props.expenseAmount]);
 
   return (
@@ -23,20 +24,20 @@ const TitleCard = (props) => {
       <View style={styles.incomeContainer}>
         <Text style={styles.incomeText}>Your total Income:</Text>
         <Text style={styles.green}>
-          {props.currency} {props.incomeAmount}
+          {props.currency} {props.incomeAmount.toLocaleString("en-IN")}
         </Text>
       </View>
       <View style={styles.incomeContainer}>
         <Text style={styles.incomeText}>Your total Expense:</Text>
         <Text style={styles.red}>
-          {props.currency} {props.expenseAmount}
+          {props.currency} {props.expenseAmount.toLocaleString("en-IN")}
         </Text>
       </View>
       <Line />
       <View style={styles.incomeContainer}>
         <Text style={styles.incomeText}>Your total Balance:</Text>
         <Text style={style}>
-          {props.currency} {balance}
+          {props.currency} {balance.toLocaleString("en-IN")}
         </Text>
       </View>
     </Card>

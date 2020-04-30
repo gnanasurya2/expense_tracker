@@ -1,13 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import Card from "./UI/Card";
 import Line from "./UI/Line";
 import Colors from "../constants/colors";
+import { PanGestureHandler } from "react-native-gesture-handler";
 
 const NoteBook = (props) => {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onLongPress={() => props.delete(props.id)}
+      onPress={() => props.clicked(props.title)}
+    >
       <Card>
         <Text style={styles.title}>{props.title} Notebook</Text>
         <Line />

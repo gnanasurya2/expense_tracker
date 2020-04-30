@@ -1,9 +1,9 @@
-import { Switch } from "react-native";
 import * as actions from "../actions/index";
 
 const initialState = {
   userName: "",
   currencySymbol: "",
+  loading: true,
 };
 
 const userReducers = (state = initialState, action) => {
@@ -19,6 +19,7 @@ const userReducers = (state = initialState, action) => {
         ...state,
         userName: action.userName,
         currencySymbol: action.currency,
+        loading: false,
       };
     default:
       return state;

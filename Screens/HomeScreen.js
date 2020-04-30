@@ -1,49 +1,77 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableNativeFeedback,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import * as SQLite from "expo-sqlite";
 
 import Colors from "../constants/colors";
 import TitleCard from "../Components/TitleCard";
 import NoteBook from "../Components/NoteBook";
-const data = [
-  { id: 1, title: "Home", income: 500, expense: 250 },
-  { id: 2, title: "Office", income: 500, expense: 250 },
-  { id: 3, title: "Home", income: 500, expense: 250 },
-];
+import Modal from "../Components/UI/Modal";
+import TopBar from "../Components/UI/TopBar";
+import BottomIcon from "../Components/UI/BottomIcon";
+import * as actions from "../store/actions/user";
+import * as notebookActions from "../store/actions/Notebook";
+import { deleteNotebooks } from "../Database/database";
 const HomeScreen = (props) => {
-  const [userDetails, setUserDetails] = useState();
-  const [loading, setLoading] = useState(true);
+  const loading = useSelector((state) => state.user.loading);
+  const user = useSelector((state) => state.user);
+  const data = useSelector((state) => state.notebook.notebooks);
   const [showModal, setShowModal] = useState(false);
-
+  const [notebookName, setNotebookName] = useState("");
+  const dispatch = useDispatch();
   useEffect(() => {
-    const db = SQLite.openDatabase("user.db");
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM DATATABLE",
-        [],
-        (_, { rows: _array }) => {
-          setUserDetails(_array._array[0]);
-          setLoading(false);
-        },
-        (_, err) => console.log(err)
-      );
-    });
+    // deleteNotebooks();
+    dispatch(actions.fetchUserDetail());
+    dispatch(notebookActions.fetchNotebooks());
   }, []);
   let welcomeString = "Good Morning";
   let currency = "$";
   if (!loading) {
-    currency = userDetails.CURRENCY;
-    welcomeString = "Good Morning " + userDetails.USERNAME + " ,";
+    currency = user.currencySymbol;
+    welcomeString = "Good Morning " + user.userName + " ,";
     const time = new Date().getHours();
     if (time >= 12 && time <= 16) {
-      welcomeString = "Good Afternoon " + userDetails.USERNAME + " ,";
+      welcomeString = "Good Afternoon " + user.userName + " ,";
     } else {
-      welcomeString = "Good Evening " + userDetails.USERNAME + " ,";
+      welcomeString = "Good Evening " + user.userName + " ,";
     }
   }
+  const createNotebooksHandler = () => {
+    if (notebookName !== "") {
+      dispatch(notebookActions.createNotebooks(notebookName, 0, 0));
+      setShowModal(false);
+      setNotebookName("");
+    }
+  };
+
+  const deleteNotebookHandler = (id) => {
+    setNotebookData(
+      notebooksData.filter((Element) => {
+        if (Element.id === id) {
+          return false;
+        }
+        return true;
+      })
+    );
+  };
+
+  const notebookClickHandler = (title) => {
+    props.navigation.navigate("notebook", {
+      screen: "Notebook",
+      params: {
+        notebookName: title,
+      },
+    });
+  };
   return (
     <View style={styles.wrapper}>
-      <View style={styles.topBar}></View>
+      <TopBar />
       <Text style={styles.text}> {welcomeString} </Text>
       <TitleCard currency={currency} incomeAmount={2500} expenseAmount={1500} />
       <View style={styles.midBar}>
@@ -51,21 +79,26 @@ const HomeScreen = (props) => {
       </View>
       <FlatList
         data={data}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.ID.toString()}
         renderItem={({ item }) => (
           <NoteBook
             symbol={currency}
-            title={item.title}
-            income={item.income}
-            expense={item.expense}
+            id={item.ID}
+            title={item.NAME}
+            income={item.INCOME}
+            expense={item.EXPENSE}
+            delete={deleteNotebookHandler}
+            clicked={notebookClickHandler}
           />
         )}
       />
-      <View style={styles.bottomBarWrapper}>
-        <View style={styles.bottomBar}>
-          <Text style={styles.plus}>+</Text>
-        </View>
-      </View>
+      <BottomIcon clicked={() => setShowModal(true)} />
+      <Modal
+        visible={showModal}
+        value={notebookName}
+        changeText={(text) => setNotebookName(text)}
+        clicked={createNotebooksHandler}
+      />
     </View>
   );
 };
@@ -82,11 +115,6 @@ const styles = new StyleSheet.create({
     marginVertical: 15,
     paddingLeft: 25,
   },
-  topBar: {
-    width: "100%",
-    height: 50,
-    backgroundColor: Colors.card,
-  },
   midBar: {
     width: "100%",
     backgroundColor: Colors.card,
@@ -97,24 +125,6 @@ const styles = new StyleSheet.create({
     fontSize: 20,
     color: Colors.text,
     textAlign: "center",
-  },
-  bottomBarWrapper: {
-    position: "absolute",
-    bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  bottomBar: {
-    backgroundColor: Colors.primary,
-    borderRadius: 50,
-    width: 50,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  plus: {
-    fontSize: 30,
   },
 });
 

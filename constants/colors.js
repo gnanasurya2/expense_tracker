@@ -6,4 +6,5 @@ export default {
   text: "#ffffff",
   green: "#24ff2b",
   red: "#ff0000",
+  active: "#03dac6",
 };

@@ -4,7 +4,9 @@ import { Text, View, StyleSheet } from "react-native";
 import Colors from "../../constants/colors";
 
 const Card = (props) => {
-  return <View style={styles.wrapper}>{props.children}</View>;
+  return (
+    <View style={{ ...styles.wrapper, ...props.style }}>{props.children}</View>
+  );
 };
 
 const styles = new StyleSheet.create({

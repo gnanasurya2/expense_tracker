@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite";
+import Currency from "../Components/Currency";
 
 const db = SQLite.openDatabase("user.db");
 
@@ -14,6 +15,30 @@ export const init = () => {
         (_, err) => {
           reject(err);
         }
+      );
+    });
+  });
+  return promise;
+};
+export const addUser = (userName, Currency) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM DATATABLE WHERE ID = 1",
+        [],
+        () => {
+          tx.executeSql(
+            "INSERT INTO DATATABLE (USERNAME , CURRENCY) VALUES( ? , ?)",
+            [userName, Currency],
+            () => {
+              resolve("added user");
+            },
+            (_, err) => {
+              reject(err);
+            }
+          );
+        },
+        (_, err) => reject(err)
       );
     });
   });
@@ -65,6 +90,38 @@ export const createNotebook = (name, income, expense) => {
   return promise;
 };
 
+export const updateNotebook = (notebookName, totalAmount, type) => {
+  let queryString =
+    "UPDATE NOTEBOOKS SET INCOME = " +
+    totalAmount +
+    " WHERE NAME = '" +
+    notebookName +
+    "'";
+  if (type === "expense") {
+    queryString =
+      "UPDATE NOTEBOOKS SET EXPENSE = " +
+      totalAmount +
+      " WHERE NAME = '" +
+      notebookName +
+      "'";
+  }
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        queryString,
+        [],
+        () => {
+          resolve("success");
+        },
+        (_, err) => {
+          reject(err);
+        }
+      );
+    });
+  });
+  return promise;
+};
+
 export const fetchNotebook = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -83,13 +140,40 @@ export const fetchNotebook = () => {
   return promise;
 };
 
-export const deleteNotebooks = () => {
+export const fetchNotebookAmount = (type, name) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "DROP TABLE IF EXISTS NOTEBOOKS",
+        "SELECT " +
+          type.toUpperCase() +
+          " FROM NOTEBOOKS WHERE NAME = '" +
+          name +
+          "'",
         [],
-        () => resolve("success"),
+        (_, result) => {
+          if (type === "expense") {
+            resolve(result.rows._array[0].EXPENSE);
+          } else {
+            resolve(result.rows._array[0].INCOME);
+          }
+        },
+        (_, err) => {
+          reject(err);
+        }
+      );
+    });
+  });
+  return promise;
+};
+export const deleteNotebook = (name) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM NOTEBOOKS WHERE NAME = '" + name + "'",
+        [],
+        () => {
+          resolve(deleteNotebookTransactions(name));
+        },
         (_, err) => reject(err)
       );
     });
@@ -102,17 +186,18 @@ export const createTransactions = (
   title,
   amount,
   category,
-  transactionType
+  transactionType,
+  date
 ) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS TRANSACTIONS (id INTEGER PRIMARY KEY NOT NULL , transactionType TEXT NOT NULL , notebookName TEXT NOT NULL , title TEXT NOT NULL , amount INTEGER NOT NULL ,category TEXT NOT NULL)",
+        "CREATE TABLE IF NOT EXISTS TRANSACTIONS (id INTEGER PRIMARY KEY NOT NULL , transactionType TEXT NOT NULL , notebookName TEXT NOT NULL , title TEXT NOT NULL , amount INTEGER NOT NULL ,category TEXT NOT NULL , date TEXT NOT NULL)",
         [],
         () => {
           tx.executeSql(
-            "INSERT INTO TRANSACTIONS (transactionType , notebookName , title , amount , category) VALUES( ?,? , ? , ? , ?)",
-            [transactionType, notebookName, title, amount, category],
+            "INSERT INTO TRANSACTIONS (transactionType , notebookName , title , amount , category , date) VALUES( ?, ? , ? , ? , ? , ?)",
+            [transactionType, notebookName, title, amount, category, date],
             (_, result) => {
               resolve(result);
             },
@@ -134,7 +219,9 @@ export const fetchTransactions = (notebookName) => {
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM TRANSACTIONS ",
+        "SELECT * FROM TRANSACTIONS WHERE notebookName = '" +
+          notebookName +
+          "'",
         [],
         (_, result) => {
           resolve(result);
@@ -148,10 +235,38 @@ export const fetchTransactions = (notebookName) => {
   return promise;
 };
 
-export const deleteTable = () => {
-  db.transaction((tx) => {
-    tx.executeSql("DROP TABLE IF EXISTS TRANSACTIONS"),
-      () => console.log("dropped"),
-      (_, err) => console.log(err);
+export const deleteTransaction = (id) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM TRANSACTIONS WHERE id = " + id,
+        [],
+        () => {
+          resolve("deleted");
+        },
+        (_, err) => {
+          reject(err);
+        }
+      );
+    });
   });
+  return promise;
+};
+
+export const deleteNotebookTransactions = (name) => {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM TRANSACTIONS WHERE notebookName = '" + name + "'",
+        [],
+        () => {
+          resolve("success");
+        },
+        (_, err) => {
+          reject(err);
+        }
+      );
+    });
+  });
+  return promise;
 };

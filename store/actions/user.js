@@ -1,11 +1,11 @@
-import { USER_DETAIL, FETCH_USER_DETAIL } from "./index";
-import { getData } from "../../Database/database";
+import { USER_DETAIL, FETCH_USER_DETAIL, FIRST_TIME_USER } from "./index";
+import { getData, addUser } from "../../Database/database";
 
 export const userDetialsHandler = (userName, currency) => {
-  return {
-    type: USER_DETAIL,
-    userName: userName,
-    currency: currency,
+  return async (dispatch) => {
+    await addUser(userName, currency)
+      .then(dispatch(fetchUserDetail()))
+      .catch((err) => console.log(err));
   };
 };
 
@@ -22,6 +22,9 @@ export const fetchUserDetail = () => {
       })
       .catch((err) => {
         console.log(err);
+        dispatch({
+          type: FIRST_TIME_USER,
+        });
       });
   };
 };

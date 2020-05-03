@@ -2,9 +2,10 @@ import { FETCH_NOTEBOOKS } from "./index";
 import {
   createNotebook,
   fetchNotebook,
-  deleteNotebooks,
+  deleteNotebook,
+  updateNotebook,
+  fetchNotebookAmount,
 } from "../../Database/database";
-
 export const fetchNotebooks = () => {
   return async (dispatch) => {
     fetchNotebook()
@@ -27,13 +28,35 @@ export const createNotebooks = (name, income, expense) => {
   };
 };
 
-export const deleteNotebook = () => {
+export const deleteNotebookHandler = (name) => {
   return async (dispatch) => {
-    await deleteNotebooks()
+    await deleteNotebook(name)
       .then((mess) => {
-        console.log(mess);
         dispatch(fetchNotebooks());
       })
       .catch((err) => console.log(err));
+  };
+};
+
+export const updateNotebookHandler = (name, amount, type) => {
+  return async (dispatch) => {
+    await updateNotebook(name, amount, type)
+      .then((data) => {
+        dispatch(fetchNotebooks());
+      })
+      .catch((err) => console.log(err));
+  };
+};
+
+export const fetchNotebookHandler = (name, amount, type, operation) => {
+  return async (dispatch) => {
+    await fetchNotebookAmount(type, name).then((data) => {
+      if (operation === "delete") {
+        amount = data - amount;
+      } else {
+        amount += data;
+      }
+      dispatch(updateNotebookHandler(name, amount, type));
+    });
   };
 };

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expense_tracker",
-    "slug": "expense_tracker",
+    "name": "Expense Notebooks",
+    "slug": "Expense_Notebooks",
     "platforms": [
       "ios",
       "android",
@@ -13,7 +13,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -23,6 +23,9 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "sdkVersion": "37.0.0",
+    "description": "",
+    "githubUrl": "https://github.com/gnanasurya2/expense_tracker"
   }
 }

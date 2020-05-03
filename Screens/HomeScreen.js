@@ -21,15 +21,33 @@ import { deleteNotebooks } from "../Database/database";
 const HomeScreen = (props) => {
   const loading = useSelector((state) => state.user.loading);
   const user = useSelector((state) => state.user);
-  const data = useSelector((state) => state.notebook.notebooks);
+  const firstTime = useSelector((state) => state.user.firstTime);
+  const noteBooksData = useSelector((state) => state.notebook.notebooks);
   const [showModal, setShowModal] = useState(false);
   const [notebookName, setNotebookName] = useState("");
+  const [incomeAmount, setIncomeAmount] = useState(0);
+  const [expenseAmount, setExpenseAmount] = useState(0);
   const dispatch = useDispatch();
   useEffect(() => {
-    // deleteNotebooks();
+    console.log(firstTime);
+    if (firstTime) {
+      props.navigation.navigate("Settings");
+    }
     dispatch(actions.fetchUserDetail());
     dispatch(notebookActions.fetchNotebooks());
   }, []);
+  useEffect(() => {
+    if (noteBooksData) {
+      let totalIncome = 0,
+        totalExpense = 0;
+      for (let notebook of noteBooksData) {
+        totalIncome += notebook.INCOME;
+        totalExpense += notebook.EXPENSE;
+      }
+      setIncomeAmount(totalIncome);
+      setExpenseAmount(totalExpense);
+    }
+  }, [noteBooksData]);
   let welcomeString = "Good Morning";
   let currency = "$";
   if (!loading) {
@@ -50,15 +68,8 @@ const HomeScreen = (props) => {
     }
   };
 
-  const deleteNotebookHandler = (id) => {
-    setNotebookData(
-      notebooksData.filter((Element) => {
-        if (Element.id === id) {
-          return false;
-        }
-        return true;
-      })
-    );
+  const deleteNotebook = (title) => {
+    dispatch(notebookActions.deleteNotebookHandler(title));
   };
 
   const notebookClickHandler = (title) => {
@@ -73,12 +84,16 @@ const HomeScreen = (props) => {
     <View style={styles.wrapper}>
       <TopBar />
       <Text style={styles.text}> {welcomeString} </Text>
-      <TitleCard currency={currency} incomeAmount={2500} expenseAmount={1500} />
+      <TitleCard
+        currency={currency}
+        incomeAmount={incomeAmount}
+        expenseAmount={expenseAmount}
+      />
       <View style={styles.midBar}>
         <Text style={styles.midBarText}>Your Notebooks</Text>
       </View>
       <FlatList
-        data={data}
+        data={noteBooksData}
         keyExtractor={(item) => item.ID.toString()}
         renderItem={({ item }) => (
           <NoteBook
@@ -87,7 +102,7 @@ const HomeScreen = (props) => {
             title={item.NAME}
             income={item.INCOME}
             expense={item.EXPENSE}
-            delete={deleteNotebookHandler}
+            delete={deleteNotebook}
             clicked={notebookClickHandler}
           />
         )}

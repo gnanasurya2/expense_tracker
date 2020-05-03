@@ -3,16 +3,20 @@ import React from "react";
 import { View, Text, StyleSheet, Animated } from "react-native";
 import Colors from "../constants/colors";
 import Card from "./UI/Card";
-import { PanGestureHandler } from "react-native-gesture-handler";
+import { useDispatch } from "react-redux";
+import * as actions from "../store/actions/transaction";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 const transaction = (props) => {
+  const dispatch = useDispatch();
   let stylesClass = styles.green,
-    prefix = "+ " + props.currency;
+    prefix = "+ " + props.currency,
+    sidebarColor = {};
   if (props.transactionType === "expense") {
+    sidebarColor = styles.sidebarRed;
     stylesClass = styles.red;
     prefix = "- " + props.currency;
   }
-
+  const finalStyles = { ...styles.sidebar, ...sidebarColor };
   const swipeLeft = (progess, dragX) => {
     const scale = dragX.interpolate({
       inputRange: [0, 100],
@@ -27,12 +31,27 @@ const transaction = (props) => {
       </View>
     );
   };
+
+  const deleteTransactionHandler = () => {
+    dispatch(
+      actions.deleteTransactionHandler(
+        props.id,
+        props.notebookName,
+        props.money,
+        props.transactionType,
+        "delete"
+      )
+    );
+  };
   return (
-    <Swipeable renderLeftActions={swipeLeft}>
+    <Swipeable
+      renderLeftActions={swipeLeft}
+      onSwipeableOpen={deleteTransactionHandler}
+    >
       <View>
         <Card style={{ padding: 0 }}>
           <View style={styles.wrapper}>
-            <View style={styles.sidebar}></View>
+            <View style={finalStyles}></View>
             <View style={styles.textContainer}>
               <Text style={styles.text}>{props.title}</Text>
               <Text style={styles.text}>Category: {props.category}</Text>
@@ -58,9 +77,12 @@ const styles = new StyleSheet.create({
   sidebar: {
     width: 12,
     height: "100%",
-    backgroundColor: "green",
     borderTopLeftRadius: 12,
+    backgroundColor: "green",
     borderBottomLeftRadius: 12,
+  },
+  sidebarRed: {
+    backgroundColor: Colors.red,
   },
   text: {
     fontSize: 18,

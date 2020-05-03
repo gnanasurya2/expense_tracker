@@ -8,7 +8,7 @@ import { PanGestureHandler } from "react-native-gesture-handler";
 const NoteBook = (props) => {
   return (
     <TouchableOpacity
-      onLongPress={() => props.delete(props.id)}
+      onLongPress={() => props.delete(props.title)}
       onPress={() => props.clicked(props.title)}
     >
       <Card>
@@ -18,13 +18,13 @@ const NoteBook = (props) => {
         <View style={styles.incomeContainer}>
           <Text style={styles.text}>Income: </Text>
           <Text style={styles.green}>
-            {props.symbol} {props.income}
+            {props.symbol} {props.income.toLocaleString("en-IN")}
           </Text>
         </View>
         <View style={styles.incomeContainer}>
           <Text style={styles.text}>Expense: </Text>
           <Text style={styles.red}>
-            {props.symbol} {props.expense}
+            {props.symbol} {props.expense.toLocaleString("en-IN")}
           </Text>
         </View>
       </Card>

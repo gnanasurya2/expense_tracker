@@ -3,9 +3,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import mainNavigator from "./MainNavigation";
 import NotebookNavigator from "./NotebookNavigation";
+
 const Stack = createStackNavigator();
 
-const RootNavigator = () => {
+const RootNavigator = (props) => {
   return (
     <NavigationContainer>
       <Stack.Navigator headerMode="none">

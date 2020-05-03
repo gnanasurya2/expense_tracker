@@ -4,6 +4,7 @@ const initialState = {
   userName: "",
   currencySymbol: "",
   loading: true,
+  firstTime: true,
 };
 
 const userReducers = (state = initialState, action) => {
@@ -20,6 +21,12 @@ const userReducers = (state = initialState, action) => {
         userName: action.userName,
         currencySymbol: action.currency,
         loading: false,
+        firstTime: false,
+      };
+    case actions.FIRST_TIME_USER:
+      return {
+        ...state,
+        firstTime: true,
       };
     default:
       return state;

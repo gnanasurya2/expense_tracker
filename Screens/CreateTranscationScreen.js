@@ -13,6 +13,9 @@ import colors from "../constants/colors";
 import Option from "../Components/UI/Option";
 import Button from "../Components/UI/Button";
 import { FlatList } from "react-native-gesture-handler";
+import { useDispatch } from "react-redux";
+import * as action from "../store/actions/transaction";
+import * as noteBookActions from "../store/actions/Notebook";
 
 const height = Dimensions.get("window").height;
 
@@ -26,13 +29,14 @@ const CreateTransactionScreen = (props) => {
     { id: 1, type: "Food", active: false },
     { id: 2, type: "Clothing", active: false },
     { id: 3, type: "Fuel", active: false },
-    { id: 6, type: "Other", active: false },
+    { id: 6, type: "Other", active: true },
     { id: 4, type: "Transport", active: false },
     { id: 5, type: "Restaurant", active: false },
     { id: 7, type: "Education", active: false },
     { id: 8, type: "Salary", active: false },
     { id: 9, type: "Loan", active: false },
   ]);
+  const dispatch = useDispatch();
   const categoryClickHandler = (index) => {
     if (!categoryStatus[index]) {
       let category = index ? [false, true] : [true, false];
@@ -57,14 +61,31 @@ const CreateTransactionScreen = (props) => {
   const cofirmTransactionHandler = () => {
     const transactionType = categoryStatus[1] ? "income" : "expense";
     const category = categories.filter((Element) => Element.active)[0].type;
-    props.navigation.navigate("Notebook", {
-      title: title,
-      amount: +money,
-      category: category,
-      transactionType: transactionType,
-    });
+    // dispatch(action.newTransactionHandler(true));
+    const date = new Date();
+    const currentDate =
+      date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    dispatch(
+      action.createTransactionsHandler(
+        props.route.params.notebookName,
+        title,
+        +money,
+        category,
+        transactionType,
+        currentDate
+      )
+    );
+    dispatch(
+      noteBookActions.fetchNotebookHandler(
+        props.route.params.notebookName,
+        +money,
+        transactionType,
+        "update"
+      )
+    );
     setTitle("");
     setMoney("");
+    props.navigation.navigate("Notebook");
   };
   return (
     <View style={styles.wrapper}>
@@ -98,9 +119,9 @@ const CreateTransactionScreen = (props) => {
           clicked={() => categoryClickHandler(1)}
         />
       </View>
-      <View style={styles.categoryWrapper}>
+      <ScrollView contentContainerStyle={styles.categoryWrapper}>
         <Text style={styles.categoryTitle}>Choose a category</Text>
-        <View style={styles.categories}>
+        <ScrollView contentContainerStyle={styles.categories}>
           {categories.map((Element) => (
             <Option
               key={Element.id}
@@ -109,8 +130,8 @@ const CreateTransactionScreen = (props) => {
               clicked={() => categoryChangeHandler(Element.id)}
             />
           ))}
-        </View>
-      </View>
+        </ScrollView>
+      </ScrollView>
       <Button title="Confirm" clicked={cofirmTransactionHandler} />
     </View>
   );
@@ -167,6 +188,8 @@ const styles = new StyleSheet.create({
     borderTopColor: Colors.text,
     borderTopWidth: 1,
     width: "100%",
+    maxHeight: 300,
+    justifyContent: "space-between",
   },
   categoryTitle: {
     fontSize: 24,
@@ -178,6 +201,8 @@ const styles = new StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "flex-start",
     flexDirection: "row",
+    width: 400,
+    // height: 250,
     flexWrap: "wrap",
     paddingHorizontal: 20,
   },

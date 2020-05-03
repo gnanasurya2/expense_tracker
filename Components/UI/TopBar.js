@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 
 import Colors from "../../constants/colors";
 
@@ -10,6 +10,7 @@ const styles = new StyleSheet.create({
     width: "100%",
     height: 50,
     backgroundColor: Colors.card,
+    alignItems: "flex-end",
   },
 });
 export default TopBar;

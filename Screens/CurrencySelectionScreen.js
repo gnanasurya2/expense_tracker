@@ -7,6 +7,7 @@ import {
   TextInput,
   FlatList,
   Image,
+  Dimensions,
 } from "react-native";
 
 import currencySymbols from "../constants/currency-symbols.json";
@@ -32,6 +33,9 @@ const CurrencySelectionScreen = (props) => {
 
   const signUpHandler = () => {
     dispatch(actions.userDetialsHandler(userName, currencySymbol));
+    setCurrencyName("");
+    setUserName("");
+    props.navigation.navigate("Home");
   };
 
   const currencySymbolHandler = (symbol, name) => {
@@ -75,7 +79,9 @@ const CurrencySelectionScreen = (props) => {
           )}
         />
       </View>
-      <Button title="Continue" clicked={signUpHandler} />
+      <View style={styles.buttonWrapper}>
+        <Button title="Continue" clicked={signUpHandler} />
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -91,9 +97,8 @@ const styles = new StyleSheet.create({
     color: Colors.text,
   },
   buttonWrapper: {
-    backgroundColor: Colors.card,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    position: "absolute",
+    bottom: 0,
   },
   textInput: {
     width: "80%",
@@ -112,7 +117,7 @@ const styles = new StyleSheet.create({
     alignItems: "center",
   },
   list: {
-    height: 250,
+    height: Dimensions.get("window").height / 5,
     flexGrow: 0,
     alignSelf: "center",
   },

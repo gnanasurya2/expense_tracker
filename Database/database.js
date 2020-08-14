@@ -74,10 +74,12 @@ export const createNotebook = (name, income, expense) => {
             "INSERT INTO NOTEBOOKS (NAME,INCOME,EXPENSE) VALUES(?,?,?)",
             [name, income, expense],
             (_, res) => {
+              console.log(res);
               resolve(res);
             },
             (_, error) => {
               reject(error);
+              console.log(error);
             }
           );
         },

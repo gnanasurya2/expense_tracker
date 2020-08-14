@@ -69,6 +69,7 @@ const HomeScreen = (props) => {
   };
 
   const deleteNotebook = (title) => {
+    console.log("delete");
     dispatch(notebookActions.deleteNotebookHandler(title));
   };
 
